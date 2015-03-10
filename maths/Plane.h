@@ -82,6 +82,22 @@ namespace maths {
     pt = m*pt;
     return planeFromNormal(normh.template slice<0,N-1>(), pt.template slice<0,N-1>());
   }
+
+  /// Calculate clip planes from projection matrix.
+  template <int N, typename T>
+  void clipPlanes(const Matrix<N,T> clip, Vector<N,T> pl[2*(N-1)])
+  {
+    unsigned int i, j;
+
+    for (i = 0; i < N-1; ++i) {
+      for (j = 0; j < N; ++j) {
+        pl[i*2][j]     = clip[j][N-1] - clip[j][i];
+        pl[i*2 + 1][j] = clip[j][N-1] + clip[j][i];
+      }
+      normalisePlane(pl[i*2]);
+      normalisePlane(pl[i*2 + 1]);
+    }
+  }
 };
 
 #endif // _MATHS_PLANE_H_
