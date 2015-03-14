@@ -41,6 +41,7 @@ namespace spacial
     /* Viewport */
     maths::Vector<2, unsigned int> vp_size;
     float aspect;
+    maths::Matrix<4, float> inv_clip;
 
     // Frustum planes equations
     enum {
@@ -66,6 +67,22 @@ namespace spacial
 
       /* Calculate clip planes */
       clipPlanes(clip, frustum_planes);
+
+      /* Calculate inverse clip matrix */
+      inv_clip = clip.inverted();
+    }
+
+    maths::Vector<3, float> screen_to_modelview(const maths::Vector<3, float> &scr)
+    {
+      maths::Vector<4, float> mv = inv_clip * (scr, 1.0f);
+
+      return (maths::Vector<3, float>)mv / mv[3];
+    }
+
+    maths::Vector<3, float> clip_to_vec(const maths::Vector<2, float> &clip)
+    {
+      return (screen_to_modelview((clip, 1)) -
+              screen_to_modelview((clip, 0))).normalized();
     }
   };
 }
