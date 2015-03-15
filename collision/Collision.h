@@ -102,7 +102,7 @@ namespace collision
     unsigned int i;
     const maths::Vector<N, T> &start = ray.startPosition();
     const maths::Vector<N, T> vec = ray.vector();
-    T ray_vec, ray_start, pl[2], param;
+    T ray_vec, ray_start, pl[2], param = 0;
 
     /* Go through each dimention */
     for (i = 0; i < N; ++i) {
