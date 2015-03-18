@@ -53,7 +53,7 @@ namespace collision
      * it becomes a dot product.
      */
     T incline = ray.vector() * planeNormal(pl);
-    T start_alt = -plane(pl, ray.startPosition());
+    T start_alt = plane(pl, ray.startPosition());
 
     if (unlikely(incline == 0)) {
       if (start_alt == 0) {
