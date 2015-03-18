@@ -116,6 +116,14 @@ namespace collision
     max_param = std::numeric_limits<T>::infinity();
   }
 
+  /* Adjust ray limits forward to last min */
+  template <typename T>
+  void RayForwardTo(T &min_param, T &max_param, T max)
+  {
+    min_param = 0;
+    max_param = max;
+  }
+
   /* min_param >= 0 */
   template <typename T, typename LBRay, typename LBCyl>
   bool RayIntersectCylinder(const maths::Line<3, T, LBRay> &ray,
