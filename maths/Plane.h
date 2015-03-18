@@ -30,7 +30,7 @@ namespace maths {
   template <int N, typename T>
   Vector<N+1, T> planeFromNormal(const Vector<N,T> &n, const Vector<N,T> &pt)
   {
-    return (n, -n*pt);
+    return (n, -(n*pt));
   }
 
   /// Construct a 3d plane from points.
@@ -78,7 +78,7 @@ namespace maths {
   {
     Vector<N,T> normh = (planeNormal(pl), (T)0);
     normh = m*normh;
-    Vector<N,T> pt = (-planeNormal(pl)*pl[3], (T)1);
+    Vector<N,T> pt = (-pl[3]*planeNormal(pl), (T)1);
     pt = m*pt;
     return planeFromNormal(normh.template slice<0,N-1>(), pt.template slice<0,N-1>());
   }
