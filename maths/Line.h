@@ -398,6 +398,12 @@ namespace maths
         return Base::startPosition() + Base::normal() * len;
       }
 
+      /* Potentially non-normalized vector */
+      maths::Vector<N, T> vector() const
+      {
+        return Base::normal() * len;
+      }
+
       T mag() const
       {
         return len;
