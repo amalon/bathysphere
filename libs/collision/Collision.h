@@ -24,11 +24,12 @@
 #include <maths/Equations.h>
 #include <maths/Line.h>
 #include <maths/Plane.h>
+#include <maths/Matrix.h>
 
 #include <algorithm>
 #include <limits>
 
-namespace collision
+namespace Collision
 {
   template <unsigned int N, typename T>
   class OrthoRange
@@ -306,6 +307,99 @@ exit_plane:
 
     return true;
   }
+
+  /// Basic triangle description.
+  class Triangle
+  {
+    public:
+      maths::Vector<4, float> facePlane;
+      maths::Vector<4, float> edgePlanes[3];
+      maths::Vector<3, float> vertices[3];
+
+    public:
+      inline bool PointInside(const maths::Vector<3, float> & pos) const
+      {
+        return maths::plane(edgePlanes[0], pos) <= 0.0f &&
+               maths::plane(edgePlanes[1], pos) <= 0.0f &&
+               maths::plane(edgePlanes[2], pos) <= 0.0f;
+      }
+  };
+
+  /// Basic line description
+  class Sphere
+  {
+    public:
+      float radius;
+  };
+
+  /// Describes a collision.
+  class Interaction
+  {
+    public:
+      /// displacement to undo the collision
+      maths::Vector<3, float> normal;
+
+      /// loction of the collision
+      maths::Vector<3, float> location;
+
+      /// Whether the collision was with a backface
+      bool backface;
+
+  };
+
+#define NO_COLLISION (-1.0f)
+
+  /// Find the closest point between two lines.
+  /**
+   * @param a1,a2        @a line1 start and end point.
+   * @param b1,b2        @a line2 start and end point.
+   * @param otherResult [out] Pointer to float in which to put the length along @a line2 that the closest point is.
+   * @return The length along @a line1 that the closest point is.
+   */
+  float ClosestPointBetweenLines(const maths::Vector<3, float> & a1, const maths::Vector<3, float> & a2,
+                                 const maths::Vector<3, float> & b1, const maths::Vector<3, float> & b2,
+                                 float * otherResult = NULL);
+
+  /// Find the closest location on the line to a particular point.
+  /**
+   * @param lineStart    The start position vector of the line.
+   * @param lineNormal   The end position vector of the line.
+   * @param pos          The position vector of the point.
+   * @return Fraction along the line that the closest point is.
+   */
+  inline float ClosestPointOnLine(const maths::Vector<3, float> & lineStart, const maths::Vector<3, float> & lineEnd,
+                                  const maths::Vector<3, float> & pos)
+  {
+  // Find the Norm
+    maths::Vector<3, float> lineNormal = lineEnd - lineStart;
+  // Dot the norm with the point
+    float mag1 = (pos - lineStart) * lineNormal;
+    float mag2 = (pos - lineEnd  ) * lineNormal;
+    return mag1 / (mag1 - mag2);
+  }
+
+  /// Find collisions between a point and a moving sphere.
+  float DetectPointSphere(Interaction & result,
+                          const maths::Vector<3, float> & point, const Sphere & sphere,
+                          const maths::Vector<3, float> & spherePosition,
+                          const maths::Vector<3, float> & sphereMovement);
+
+  /// Find collisions between a line and a moving sphere.
+  float DetectLineSphere(Interaction & result,
+                         const maths::Vector<3, float> & point1, const maths::Vector<3, float> & point2, const Sphere & sphere,
+                         const maths::Vector<3, float> & spherePosition,
+                         const maths::Vector<3, float> & sphereMovement);
+
+  /// Find collisions between a plane and a moving sphere.
+  float DetectPlaneSphere(Interaction & result, const maths::Vector<4, float> & plane, const Sphere & sphere,
+                          const maths::Vector<3, float> & spherePosition,
+                          const maths::Vector<3, float> & sphereMovement);
+
+  /// Find collisions between a triangle and a moving sphere.
+  float DetectTriangleSphere(Interaction & result,
+                             const Triangle & triangle, const Sphere & sphere,
+                             const maths::Vector<3, float> & spherePosition,
+                             const maths::Vector<3, float> & sphereMovement);
 }
 
 #endif // _COLLISION_COLLISION_H_
