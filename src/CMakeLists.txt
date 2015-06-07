@@ -37,6 +37,7 @@ set(bathysphere_SRCS
 )
 
 include_directories(
+  ../libs
   ${GLUT_INCLUDE_DIR}
   ${OPENGL_INCLUDE_DIR}
 )
