@@ -1,0 +1,6 @@
+[X] different location each run, not near edges
+[O] don't intersect land
+[X] stop on land
+[X] panoramic outside of world
+[X] not such high terrain
+[X] sort out sun

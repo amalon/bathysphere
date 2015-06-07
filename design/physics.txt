@@ -1,0 +1,36 @@
+object gives attached node its new speed + position
+node adjust speed and position to match
+if node is taut
+  tells connected node new speed and position acording to constraint
+..
+..
+reaches root
+if slack, fine
+if taut, go back applying constraints
+
+recursive function
+input: new speed + position
+output: 
+
+
+IMPULSE BASED LINEAR CONSTRAINTS
+
+set of constraints:
+  // constant
+  Object * objects[2];
+  float maxDistance;
+  // varying
+  Maths::Vector<3, float
+  float tension;
+  
+"i want to go at this velocity. constraint, here's up to maxImpulse neuton seconds to satisfy yourself"
+constraint: constraint to satisfy
+self: object stating desired velocity
+velocity: velocity desired by object
+maxImpulse: the impulse self can exert on other
+vector attemptVelocity(constraint, self, velocity, maxImpulse)
+  if velocity * direction < 0
+    projectV = -direction * velocity * direction
+    impulseused = other.attemptVelocity(projectV);
+  else
+    

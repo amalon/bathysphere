@@ -1,0 +1,30 @@
+weight constant
+drag prop
+
+object->SetVelocity(current + relativeVelocity * (1.0f-dt*drag*10.0f));
+
+v = c + (v-c) * (1-dt*drag)
+v = c + (v*(1-f) - c*(1-f))
+v = v - vf + cf
+v = v(1-f) + cf
+v(i+1) = v(i)(1-f) + cf
+
+v(i+2) = (v(i)(1-f) + cf)(1-f) + cf
+
+v(i+3) = ((v(i)(1-f) + cf)(1-f) + cf)(1-f) + cf
+
+v = velocity
+for (i = 0; i < n; ++i)
+  v = v(1-f) + cf
+
+dv = v-velocity
+
+
+terminal velocity:
+Vt = sqrt(2*m*g/(density*xarea*drag))
+Vt = sqrt(2*(4/3*r^3)*g/((r^2)*drag))
+Vt = sqrt(8*/3*r*g/(r*drag))
+
+mass = density*volume
+= density*4/3PI*r^3
+area = PI*r^2

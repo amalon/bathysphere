@@ -1,0 +1,47 @@
+find inverse R (using position + transposition)
+take triangles into bathysphere space
+restrict
+  -> any to those in range z using tri centre + bounding sphere
+  -> any in range x,y using bounding circle on x,y plane
+this should produce only triangles in immediate range
+  any subdivided, ignore and do same to children (queue)
+    up to a limit based on size of object
+  any unsubdivided, divide for a minimum certain time
+
+foreach triangle (which can be assumed to be smaller than the base of the bathysphere
+  
+
+todo
+[ ] adaptive mesh
+  [X] allow subdivide, time based
+  [ ] triangle bounding spheres
+  [ ] triangle centres
+  
+advance(object, dt) {
+  add forces + torques eg. g
+  while (dt) {
+    find acceleration: a = F / m
+    find delta velocity v = a*dt
+    find delta position s = v*dt (aproximation, 1/2*a*dt^2 assumed to be insignificant)
+    if (rigid) {
+      find delta angular velocity
+      find delta orientation (quaternion)
+    }
+    if (checkCollisions) {
+      check for collisions between x and x+s, q0 and q1
+        let t be the time before the next collision, max dt
+      commit delta velocity * t/dt
+      commit delta position * t/dt
+      if (rigid) {
+        commit delta angular velocity * t/dt
+        commit delta orientation slerp(t/dt)
+      }
+      if collision:
+        add reaction force to counteract any current forces which would cause a further collision
+        for duration of contact add friction forces
+    }
+    dt -= t
+  }
+  clear forces
+}
+

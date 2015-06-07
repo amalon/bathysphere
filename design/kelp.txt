@@ -1,0 +1,14 @@
+types of kelp
+[ ] kelp
+    [ ] set of main control points
+    [ ] which have hard range constraints to one another
+    [ ] 
+[ ] giant bladder kelp
+    [ ] stalk like intertwined strands
+    [ ] leaves off stalk
+    
+[ ] strand
+    [ ] set of control points
+    [ ] range constraints
+    [ ] one end fixed
+    [ ] sub strands attached

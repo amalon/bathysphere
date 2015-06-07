@@ -1,0 +1,37 @@
+class Object
+  position
+  velocity
+  density   km/m2
+  volume    m2
+  resistance(direction)
+  hard constraints
+
+bathysphere
+inside mesh
+outside mesh
+
+A \__/ B \__/ C
+
+starts just soft:
+grav
+resistance
+
+A \_
+    \_B \__/ C
+
+tight,
+soft:
+grav
+resistance
+hard:
+pull on B towards A
+
+
+for each object add soft constraint forces
+for each object add hard constraint forces
+advance by forces
+for each object implement hard constraints
+  move objects so constraints aren't disatisfied?
+  alter velocities in reaction.
+clear forces
+render

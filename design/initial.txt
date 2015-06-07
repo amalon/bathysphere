@@ -1,0 +1,64 @@
+bathysphere
+[ ] red internal lighting
+[ ] bolted windows
+[ ] currents around when moving
+    [ ] 
+[ ] external spot lights
+[ ] submarine hatch
+[ ] compressed gas cylinders + piping
+[ ] LCD screens with readouts of various bits
+    [ ] depth
+    [ ] internal pressure
+    [ ] external pressure
+    [ ] oxygen + CO2
+[ ] swively + springy chair
+[ ] circular desk
+    [ ] map screens
+    [ ] radar screen
+    [ ] writing space
+    [ ] microphone
+[ ] random objects
+    [ ] clock
+    [ ] big red button
+    [ ] speakers
+
+strands
+[ ] fix rope sim
+    [ ] allow tension in both directions
+
+cord
+[X] textured
+
+kelp
+[ ] texture? fix colouring
+
+tether
+[X] thick flexible cord
+[O] textured cylinder made up of multiple control points
+[X] spline curves in between
+[X] each control point constrained to next by max distance
+[X] when theres slack, the points move with the currents
+
+water
+[O] continuous 3d field of currents
+    [O] using some function of position and time
+    [ ] along with extras like depending on bathysphere
+[O] water surface affected by currents underneith (integration of function)
+[ ] lots of bits of crap, general particles moving around near camera
+    [ ] when one goes out of range on one side another is created at similar
+    [ ] position on other side
+[X] provides water resistance
+
+surface
+[ ] altitude function
+[ ] minimum subdivision so plants etc can be apropriately rooted
+[X] some form of texture for surface
+[X] sun glare through water
+    [X] rays
+    [X] flare
+
+collision detection
+[ ] 
+
+bubbles
+[X] simple particles accelerating upwards
