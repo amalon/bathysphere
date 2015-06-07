@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=BathysphereSim
+Exec=bathysphere -caption "%c" %i %m %u
+Comment=Batysphere Simulator
+Icon=/home/james/cs/cgv/open/code/src/bathysphere.png
+MimeTypes=
+Terminal=false

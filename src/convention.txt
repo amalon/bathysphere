@@ -1,0 +1,9 @@
+
+#define SOMETHING_ELSE
+namespace SomethingElse
+class CamelCase
+protected _somethingElse
+public somethingElse
+status s_something
+function SomethingElse
+argument somethingElse

@@ -1,0 +1,8 @@
+Controls:
+  A key:        descend bathysphere
+  B key:        ascend bathysphere
+  Arrow keys:   move/look around
+  Spacebar:     stop ascend/descent
+  Page Up/Down: zoom in/out in 3rd person view
+  Right click:  menu
+  Escape:       reset simulation
