@@ -21,8 +21,27 @@
  */
 
 #include <maths/Matrix.h>
+#include "maths/Quaternion.h"
 
 namespace maths {
+
+  template <>
+  Matrix<3,float>::Matrix(const Quaternion<float> & q)
+  {
+    typedef float T;
+    T xy = q[0]*q[1];
+    T xz = q[0]*q[2];
+    T yy = q[1]*q[1];
+    T yw = q[1]*q[3];
+    T zz = q[2]*q[2];
+    T zw = q[2]*q[3];
+    setVector3(col[0].v, 1-2*(yy+zz),   2*(xy+zw),   2*(xz-yw));
+    T xx = q[0]*q[0];
+    T xw = q[0]*q[3];
+    T yz = q[1]*q[2];
+    setVector3(col[1].v,  2*(xy-zw), 1-2*(xx+zz),   2*(yz+xw));
+    setVector3(col[2].v,  2*(xz+yw),   2*(yz-xw), 1-2*(xx+yy));
+  }
 
   /// Get an arbitrary matrix where the z axis points in the direction of Z.
   Matrix<3,float> getTbnMatrix(Vector<3, float> vZ)
