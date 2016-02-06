@@ -508,6 +508,151 @@ void mesh::AdaptiveMesh::adaptTriangleToObserver(const maths::Observer<float> & 
   m_TriangleAdaptionStack.clear();
 }
 
+/// Get a list of triangles which intersect the given sphere.
+/**
+ * @param results [in,out] The indices of the intersecting triangles.
+ * @param center Sphere center position vector.
+ * @param radius Radius of the sphere.
+ * @param depth The number of further levels to descend before adding triangles.
+ */
+void mesh::AdaptiveMesh::getIntersectingTriangles(std::list<Collision::Triangle> & results,
+                                                  const maths::Vector<3,float> & center, float radius, int depth)
+{
+  /**
+   * for each triangle
+   *   try adding to list
+   */
+
+  unsigned int iTriangleIndex;
+  for (iTriangleIndex = 0; iTriangleIndex < getNumPermanentTriangles(); ++iTriangleIndex) {
+    checkIntersectingTriangle(results,
+                              &m_PermanentTriangles, iTriangleIndex,
+                              center, radius, depth);
+  }
+}
+
+/// Check if a triangle or its children are intersecting a given sphere and add them to a list.
+/**
+ * @param results [in,out] The indices of the intersecting triangles.
+ * @param triangle MeshBlock containing the triangle to check.
+ * @param triangleIndex Index of the triangle to check.
+ * @param center Sphere center position vector.
+ * @param radius Radius of the sphere.
+ * @param depth The number of further levels to descend before adding triangles.
+ */
+void mesh::AdaptiveMesh::checkIntersectingTriangle(std::list<Collision::Triangle> & results,
+                                                   Mesh::MeshBlock * triangle, unsigned int triangleIndex,
+                                                   const maths::Vector<3,float> & center, float radius, int depth,
+                                                   float triangleBound)
+{
+  // Check that the triangle is intersecting the sphere aproximately
+  // if the triangle is small enough, add to the list
+  // otherwise ensure subdivided for a few frames and check the children
+  // ((v1+V2+v3) - 3*center).sqr < 9*radius
+
+  int i;
+
+  // Eliminate using edge planes first
+  int indexEdgePlanes = getIndexTriangleEdgePlanes();
+  assert(indexEdgePlanes >= 0 && "Triangle edge planes must be enabled to use checkIntersectingTriangle(...)");
+  const maths::Vector<4, float> * edgePlanes = (const maths::Vector<4, float> *) (void*) triangle->getFieldFloat(indexEdgePlanes)[triangleIndex];
+  // for temporary triangles:
+  //  triangleIndex 0-2: only need to check inner edge plane (1)
+  //  triangleIndex 3: need to check all three
+  // for permanent triangles:
+  //  check all three planes
+  float planeDistance;
+  if (triangle->getStartIndex() && triangleIndex < 3) {
+    planeDistance = maths::plane(edgePlanes[1], center);
+    if (planeDistance > radius) {
+      return;
+    }
+  } else if (triangle->getStartIndex()) {
+    for (i = 0; i < 3; ++i) {
+      planeDistance = maths::plane(edgePlanes[i], center);
+      if (planeDistance > radius + triangleBound*0.5f) {
+        return;
+      }
+    }
+  }
+
+  // Get the vertices
+  const unsigned int * triVerts = triangle->getFieldUint(getIndexTriangleVerts()) [triangleIndex];
+  maths::Vector<3,float> vertPos[3];
+  vertPos[3].set();
+  for (i = 0; i < 3; ++i) {
+    const Mesh::MeshBlock * block = getVertexBlock(triVerts[i]);
+    if (!block) return;
+    assert(block && "The vertices should exist");
+    vertPos[i] = (maths::Vector<3,float>) block->getFieldFloat(getIndexVertexPosition())[triVerts[i]-block->getStartIndex()];
+    vertPos[3] += vertPos[i];
+  }
+
+  // calculate centre and aproximate radius
+  vertPos[3] /= 3.0f;
+  if (triangleBound < 0.0f) {
+    triangleBound = 0.0f;
+    for (i = 0; i < 3; ++i) {
+      float dist2 = (vertPos[i] - vertPos[3]).sqr();
+      if (dist2 > triangleBound) {
+        triangleBound = dist2;
+      }
+    }
+    triangleBound = sqrt(triangleBound);
+    triangleBound *= 2.0f;
+  }
+
+  // Now use the face plane and check the sphere is aproximitely in range.
+  int indexPlane = getIndexTrianglePlane();
+  assert(indexPlane >= 0 && "Triangle planes must be enabled to use checkIntersectingTriangle(...)");
+  const maths::Vector<4, float> * trianglePlane = (const maths::Vector<4, float> *) (void*) triangle->getFieldFloat(indexPlane)[triangleIndex];
+  planeDistance = maths::plane(trianglePlane[0], center);
+  if ((planeDistance > triangleBound + radius) || (planeDistance < -(triangleBound + radius))) {
+    return;
+  }
+
+  // Protect the triangle from remerging for a short while
+  int merge_misses_id = getIndexTriangleMergeMisses();
+  if (merge_misses_id >= 0) {
+    unsigned int * merge_miss = triangle->getFieldUint(merge_misses_id) [triangleIndex];
+    *merge_miss += 5;
+  }
+
+  // Check that its small enough
+  if (!depth) {
+    Collision::Triangle tri;
+    tri.facePlane = trianglePlane[0];
+    for (int i = 0; i < 3; ++i) {
+      tri.vertices[i] = vertPos[i];
+      tri.edgePlanes[i] = edgePlanes[i];
+    }
+    results.push_back(tri);
+    //results.push_back(triangle->getStartIndex() + triangleIndex);
+  } else {
+    // check children in turn
+
+    // Get the split factor so we can decide what to do
+    unsigned char iSplits = getTriangleSplitBits(triangle, triangleIndex);
+    if (iSplits < 0x7) {
+      splitAllEdges(triangle, triangleIndex);
+      iSplits = getTriangleSplitBits(triangle, triangleIndex);
+    }
+
+    if (iSplits >= 0x7) {
+      const unsigned int subTriBlock = triangle->getFieldUint(getIndexTriangleSubTriangleBlock()) [triangleIndex] [0];
+      if (subTriBlock != MESH_INVALID_TRIBLOCK) {
+        Mesh::MeshBlock * block = m_TemporaryTriangleBlocks[subTriBlock];
+        if (block) {
+          for (i = 0; i < 4; ++i) {
+            checkIntersectingTriangle(results, block, i, center, radius, depth-1, triangleBound / 2.0f);
+          }
+        }
+      }
+    }
+  }
+}
+
+
 /// Split all edges.
 /**
  * Splits all edges using splitEdge.

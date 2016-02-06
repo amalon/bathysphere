@@ -25,6 +25,7 @@
 
 #include "maths/Vector.h"
 #include "maths/Observer.h"
+#include "collision/Collision.h"
 
 #include <stdexcept>
 #include <vector>
@@ -59,6 +60,9 @@ class AdaptiveMesh : public Mesh
 
     void adaptToObserver(const maths::Observer<float> & observer, unsigned int * pOperationLimit = 0, unsigned int maxDepth = 10, bool clean = true);
 
+    void getIntersectingTriangles(std::list<Collision::Triangle> & result,
+                                  const maths::Vector<3,float> & center, float radius, int depth = 0);
+
 
     virtual void renderGL(const maths::Observer<float> * observer = 0) const;
 
@@ -71,6 +75,11 @@ class AdaptiveMesh : public Mesh
                                  Mesh::MeshBlock * pTriangle, unsigned int iTriangleIndex,
                                  unsigned int * pOperationLimit = 0, bool clean = true,
                                  unsigned int iMaxDepth = 0);
+    // Used by getIntersectingTriangles
+    void checkIntersectingTriangle(std::list<Collision::Triangle> & results,
+                                   Mesh::MeshBlock * triangle, unsigned int triangleIndex,
+                                   const maths::Vector<3,float> & center, float radius, int depth = 0,
+                                   float triangleBound = -1.0f);
 
     // Check for anything that could indicate bugs in the code.
     void checkConsistency() const;
