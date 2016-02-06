@@ -34,6 +34,11 @@
 
 namespace maths
 {
+  // This isn't always used with matricies.
+  // Include maths/Quaternion.h if you wish to use it.
+  template <typename T>
+      class Quaternion;
+
   template <int N, typename T>
       class Matrix;
 
@@ -142,6 +147,8 @@ namespace maths
       {
         std::memcpy(col, columns, sizeof(T)*(N*N));
       }
+      /// Convert quaternion to matrix
+      explicit Matrix(const Quaternion<T> &);
 
       /// From something else
       /**
