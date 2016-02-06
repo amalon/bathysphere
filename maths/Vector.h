@@ -275,13 +275,15 @@ namespace maths {
         return ret += rhs;
       }
 
-      inline Vector & operator -= (const Vector & rhs)
+      template <typename U>
+      inline Vector & operator -= (const Vector<N, U> & rhs)
       {
         for (int i = 0; i < N; ++i)
           v[i] -= rhs.v[i];
         return *this;
       }
-      inline Vector operator - (const Vector & rhs) const
+      template <typename U>
+      inline Vector operator - (const Vector<N, U> & rhs) const
       {
         Vector ret = *this;
         return ret -= rhs;
