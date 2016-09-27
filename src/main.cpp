@@ -124,7 +124,7 @@ void SetSwitch(int switchId, int value)
 int main(int argc, char **argv)
 {
   // Print a copyright notice to the console
-  std::cout << " Bathysphere Sim 1.0  Copyright (C) 2007  James Hogan\n";
+  std::cout << " Bathysphere Sim 1.0  Copyright (C) 2007-2016  James Hogan\n";
   std::cout << " This program comes with ABSOLUTELY NO WARRANTY.\n";
   std::cout << " This is free software, and you are welcome to redistribute it\n";
   std::cout << " under certain conditions." << std::endl;
